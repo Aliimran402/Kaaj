@@ -35,7 +35,9 @@ class EmailCodeService {
         this.secret = secret.getBytes(StandardCharsets.UTF_8);
     }
 
-    @Transactional
+    // noRollbackFor: "too soon" / "too many" must not mark the caller's transaction (AuthService) rollback-only,
+    // or its commit fails with UnexpectedRollbackException and the client gets a 500 instead of this 429
+    @Transactional(noRollbackFor = ApiException.class)
     void send(String email, String purpose) {
         Instant now = Instant.now();
         codes.findFirstByEmailAndPurposeOrderByCreatedAtDesc(email, purpose).ifPresent(last -> {

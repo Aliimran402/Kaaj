@@ -36,3 +36,7 @@ web/dist/
 
 .env
 data/
+
+### Local notes (never committed) ###
+/docs/
+CLAUDE.md

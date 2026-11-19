@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+/* Colours from the Figma design. Text colours keep at least 4.5:1 contrast on white,
+   the page background and the banner (WCAG 2.2 AA). */
+@theme {
+  --font-sans: 'Noto Sans Bengali', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --color-brand: #2459a5;
+  --color-brand-hover: #1d4887;
+  --color-brand-soft: #edf1fa; /* light-blue banner */
+  --color-page: #f6f5f1; /* page background */
+  --color-ink: #16223a; /* headings and body text */
+  --color-muted: #5b6475; /* secondary text */
+  --color-line: #e4e2db; /* card borders */
+  --color-line-strong: #cfd5e1;
+  --color-field: #8a93a5; /* input borders: 3:1 against white */
+
+  --color-success: #1e7a4c;
+  --color-success-soft: #e6f4ec;
+  --color-warning: #8a5300;
+  --color-warning-soft: #fff4dc;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdeceb;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6; /* room for Bangla vowel signs and conjuncts */
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}

@@ -7,5 +7,3 @@ logging:
 kaaj:
   mail:
     log-only: true          # codes are printed in the terminal, not emailed
-  web:
-    after-login-url: /api/v1/me
