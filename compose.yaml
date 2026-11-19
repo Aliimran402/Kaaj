@@ -1,0 +1,11 @@
+services:
+  db:
+    build: ./docker/db
+    environment:
+      POSTGRES_DB: kaaj
+      POSTGRES_USER: kaaj
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports: ["5433:5432"]
+    volumes: ["dbdata:/var/lib/postgresql"]
+volumes:
+  dbdata: {}
