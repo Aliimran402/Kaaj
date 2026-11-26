@@ -1,0 +1,9 @@
+spring:
+  flyway:
+    out-of-order: true
+logging:
+  level:
+    app.kaaj: debug
+kaaj:
+  mail:
+    log-only: true          # codes are printed in the terminal, not emailed

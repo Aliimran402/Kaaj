@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: kaaj
+  config:
+    import: optional:file:.env[.properties]
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5433/kaaj
+    username: kaaj
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+  docker:
+    compose:
+      lifecycle-management: start-only
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:not-set}
+            client-secret: ${GOOGLE_CLIENT_SECRET:not-set}
+            scope: openid, email, profile
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_APP_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+
+springdoc:
+  swagger-ui:
+    csrf:
+      enabled: true
+
+kaaj:
+  codes:
+    secret: ${KAAJ_CODE_SECRET}
+  mail:
+    log-only: false
+  admin:
+    email: ${KAAJ_ADMIN_EMAIL:}
+    password: ${KAAJ_ADMIN_PASSWORD:}
+  web:
+    after-login-url: /
+    login-url: /login
