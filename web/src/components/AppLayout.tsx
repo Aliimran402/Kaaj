@@ -6,13 +6,14 @@ import { useCurrentUser } from '../features/auth/api';
 import { formatNumber } from '../lib/format';
 import { LanguageSwitch } from './LanguageSwitch';
 import { Logo } from './Logo';
+import { useRoleLinks } from './navLinks';
 import { Button, ButtonLink, Container } from './ui';
 import { UserMenu } from './UserMenu';
 
-/** Links in the header. Add your feature's pages here (and use the role to show them only to the right people). */
+/** Links in the header. Add your feature's pages here (role-specific pages go in useRoleLinks, navLinks.ts). */
 function useNavLinks() {
   const { t } = useTranslation();
-  return [{ to: '/#how-it-works', label: t('nav.howItWorks') }];
+  return [...useRoleLinks(), { to: '/#how-it-works', label: t('nav.howItWorks') }];
 }
 
 export function AppLayout() {

@@ -2,6 +2,7 @@ package app.kaaj.identity.internal;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import app.kaaj.identity.Role;
 import app.kaaj.shared.ApiException;
@@ -21,6 +22,12 @@ class AuthService {
     }
 
     static String normalize(String email) { return email.trim().toLowerCase(Locale.ROOT); }
+
+    /** The signed-in user's account (GET /me). */
+    @Transactional(readOnly = true)
+    AppUser account(UUID userId) {
+        return users.findById(userId).orElseThrow(() -> ApiException.unauthorized("auth.required"));
+    }
 
     void register(String rawEmail, String password, Role role) {
         if (role == null || role == Role.ADMIN) throw ApiException.badRequest("auth.role.invalid");

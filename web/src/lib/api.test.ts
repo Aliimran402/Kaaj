@@ -18,6 +18,20 @@ describe('apiFetch', () => {
     expect(call.body).toEqual({ a: 1 });
   });
 
+  it('sends a file upload (FormData) as it is, with the CSRF token and no JSON content type', async () => {
+    document.cookie = 'XSRF-TOKEN=token-456; path=/';
+    const { calls } = mockApi({ 'POST /api/v1/employer/profile/document': { status: 200, body: { ok: true } } });
+    const form = new FormData();
+    form.append('documentType', 'NATIONAL_ID');
+
+    await apiFetch('/api/v1/employer/profile/document', { method: 'POST', body: form });
+
+    const [call] = calls;
+    expect(call.rawBody).toBe(form);
+    expect(call.headers.get('Content-Type')).toBeNull();
+    expect(call.headers.get('X-XSRF-TOKEN')).toBe('token-456');
+  });
+
   it('gets a CSRF cookie first when there is none, as after signing out', async () => {
     const { calls } = mockApi({
       'GET /api/v1/me': () => {

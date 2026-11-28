@@ -17,6 +17,11 @@ spring:
   docker:
     compose:
       lifecycle-management: start-only
+  servlet:
+    multipart:
+      # FileKind.DOCUMENT allows 3 MB and says so in Bangla/English; this outer limit only stops huge uploads early
+      max-file-size: 4MB
+      max-request-size: 5MB
   security:
     oauth2:
       client:
@@ -57,3 +62,5 @@ kaaj:
   web:
     after-login-url: /
     login-url: /login
+  files:
+    dir: ${KAAJ_FILES_DIR:data/uploads}   # uploaded documents (git-ignored); only the key is stored in the database

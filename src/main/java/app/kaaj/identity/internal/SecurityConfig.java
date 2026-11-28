@@ -23,6 +23,8 @@ class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http, GoogleLoginSuccessHandler googleSuccess) throws Exception {
         http
             .csrf(csrf -> csrf.spa())   // XSRF-TOKEN cookie -> X-XSRF-TOKEN header
+            // The admin verification page shows an uploaded PDF in a frame from this same site (never another one).
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

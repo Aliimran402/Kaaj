@@ -9,3 +9,20 @@ export function toAsciiDigits(text: string): string {
 export function formatNumber(value: number, language: string, options?: Intl.NumberFormatOptions): string {
   return new Intl.NumberFormat(language === 'en' ? 'en-IN' : 'bn-BD', options).format(value);
 }
+
+/** "01712345678" → "০১৭১২৩৪৫৬৭৮" in Bangla; unchanged in English. For phone numbers and codes, not amounts. */
+export function localDigits(text: string, language: string): string {
+  return language === 'en' ? text : text.replace(/[0-9]/g, (digit) => BANGLA_DIGITS[Number(digit)]);
+}
+
+/** An ISO timestamp from the API as a date: "২৭ নভেম্বর, ২০২৬" / "27 Nov 2026". Empty for null. */
+export function formatDate(iso: string | null | undefined, language: string): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat(language === 'en' ? 'en-GB' : 'bn-BD', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date);
+}

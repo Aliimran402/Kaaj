@@ -60,19 +60,20 @@ function GuestHome() {
   );
 }
 
-const NEXT_STEPS: Record<Role, readonly { key: 'one' | 'two' | 'three'; icon: typeof Search }[]> = {
+// `to`: the step is built, so it links to its page instead of saying "Coming soon".
+const NEXT_STEPS: Record<Role, readonly { key: 'one' | 'two' | 'three'; icon: typeof Search; to?: string }[]> = {
   SEEKER: [
     { key: 'one', icon: UserRound },
     { key: 'two', icon: BadgeCheck },
     { key: 'three', icon: Search },
   ],
   EMPLOYER: [
-    { key: 'one', icon: Building },
+    { key: 'one', icon: Building, to: '/employer/profile' },
     { key: 'two', icon: BriefcaseBusiness },
     { key: 'three', icon: ListOrdered },
   ],
   ADMIN: [
-    { key: 'one', icon: BadgeCheck },
+    { key: 'one', icon: BadgeCheck, to: '/admin/verification' },
     { key: 'two', icon: Flag },
     { key: 'three', icon: UsersRound },
   ],
@@ -111,7 +112,7 @@ function SignedInHome({ user }: { user: Me }) {
         <Card>
           <h2 className="font-bold text-ink">{t('home.next.title')}</h2>
           <ul className="mt-4 divide-y divide-line">
-            {NEXT_STEPS[user.role].map(({ key, icon: Icon }) => (
+            {NEXT_STEPS[user.role].map(({ key, icon: Icon, to }) => (
               <li key={key} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0 sm:items-center">
                 <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
                   <Icon aria-hidden className="size-5" />
@@ -119,10 +120,17 @@ function SignedInHome({ user }: { user: Me }) {
                 {/* On phones the badge goes under the text, so the text keeps the full width. */}
                 <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <span className="text-sm text-ink">{t(`home.next.${user.role}.${key}`)}</span>
-                  <Badge tone="neutral">
-                    <Clock aria-hidden className="size-3.5" />
-                    {t('common.comingSoon')}
-                  </Badge>
+                  {to ? (
+                    <ButtonLink to={to} variant="secondary" className="shrink-0">
+                      {t('home.next.open')}
+                      <ArrowRight aria-hidden className="size-4" />
+                    </ButtonLink>
+                  ) : (
+                    <Badge tone="neutral">
+                      <Clock aria-hidden className="size-3.5" />
+                      {t('common.comingSoon')}
+                    </Badge>
+                  )}
                 </div>
               </li>
             ))}

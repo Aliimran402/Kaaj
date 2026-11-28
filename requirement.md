@@ -52,6 +52,21 @@ AI-powered job search web app for blue-collar workers in Bangladesh. Bangla is t
   - Verify: 6-digit code; accepts Bangla digits, sends itself when complete, 60 s resend timer.
   - Login: handles an unconfirmed email (sends a new code) and the Google ?error= codes.
   - Also: 404 page, route guards (RequireRole, GuestOnly), and 41 Vitest tests.
+- M1-3 Employer profile and verification (Member-3's feature, layout from his web app, Kaaj's design):
+  - Flyway V130 (table `employer`, with CHECKs for the verification rules); module `employer` (public: `EmployerDirectory`,
+    `EmployerSummary.verified()` = the "Verified" badge for job posts, events `EmployerVerified`/`EmployerRejected`).
+  - API: `GET/PUT /api/v1/employer/profile` · `POST /api/v1/employer/profile/document` (multipart: file, documentType)
+    · `POST /api/v1/employer/profile/submit` · `GET /api/v1/admin/employers?status=PENDING|VERIFIED|REJECTED&cursor=&size=`
+    · `GET /api/v1/admin/employers/counts` · `GET /api/v1/admin/employers/{id}` · `GET /api/v1/admin/employers/{id}/document`
+    · `POST /api/v1/admin/employers/{id}/verification` (`{"decision":"APPROVE"|"REJECT","reason":"..."}`; REJECT needs a reason).
+  - Shared: `FileStore` (files on disk under `kaaj.files.dir`, type checked from the bytes, images re-encoded), `Cursor`/`CursorPage`,
+    `AuditLog` (admin decisions go to `audit_log`), `UserDirectory`. MeController now goes through AuthService (MVC).
+  - web/: `/employer/profile` (form, map pin, document upload, status panel with the badge preview) and `/admin/verification`
+    (queue with tabs, document preview, approve/reject). Links in the header, the account menu and the signed-in home page.
+  - MVC is checked by tests: `MvcLayersTest` (controllers never touch repositories/SQL/files) and `web/src/architecture.test.ts`
+    (pages never call the server; only `features/*/api.ts` hooks do).
+  - Tests: `.\mvnw.cmd test` (unit tests + `EmployerVerificationFlowTests`, which runs on a fresh PostgreSQL built from
+    docker/db/Dockerfile by Testcontainers: needs Docker Desktop, skipped without it); `cd web; npm test`.
 
 ## Open points
 - Google sign-in credentials and redirect URI (see "My setup").

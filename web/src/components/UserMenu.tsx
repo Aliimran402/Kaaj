@@ -1,13 +1,15 @@
-import { ChevronDown, LogOut } from 'lucide-react';
+import { ChevronDown, ChevronRight, LogOut } from 'lucide-react';
 import { useEffect, useId, useRef, useState, type FocusEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useLogout, type Me } from '../features/auth/api';
+import { useRoleLinks } from './navLinks';
 import { Badge } from './ui';
 
-/** The signed-in user's menu in the header: who is signed in, and sign out. */
+/** The signed-in user's menu in the header: who is signed in, their pages (on phones the only menu), and sign out. */
 export function UserMenu({ user }: { user: Me }) {
   const { t } = useTranslation();
+  const roleLinks = useRoleLinks();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -77,6 +79,18 @@ export function UserMenu({ user }: { user: Me }) {
             <Badge>{t(`account.role.${user.role}`)}</Badge>
           </div>
           <div className="my-1 h-px bg-line" />
+          {roleLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setOpen(false)}
+              className="focus-ring flex min-h-11 w-full items-center justify-between gap-2 rounded-lg px-3 text-sm font-semibold text-ink hover:bg-page"
+            >
+              {link.label}
+              <ChevronRight aria-hidden className="size-4 text-muted" />
+            </Link>
+          ))}
+          {roleLinks.length > 0 && <div className="my-1 h-px bg-line" />}
           {logout.isError && (
             <p role="alert" className="px-3 py-2 text-sm text-danger">
               {t('account.signOutFailed')}

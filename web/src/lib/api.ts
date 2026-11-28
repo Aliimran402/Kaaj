@@ -57,7 +57,7 @@ type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export type RequestOptions = {
   method?: Method;
-  /** Sent as JSON. */
+  /** Sent as JSON; FormData (a file upload) is sent as multipart/form-data. */
   body?: unknown;
   signal?: AbortSignal;
 };
@@ -68,7 +68,9 @@ export async function apiFetch<T>(path: string, { method = 'GET', body, signal }
     Accept: 'application/json',
     'Accept-Language': i18n.resolvedLanguage ?? 'bn',
   });
-  if (body !== undefined) headers.set('Content-Type', 'application/json');
+  // For FormData the browser sets Content-Type itself, with the multipart boundary.
+  const isForm = body instanceof FormData;
+  if (body !== undefined && !isForm) headers.set('Content-Type', 'application/json');
   if (method !== 'GET') {
     const token = await csrfToken();
     if (token) headers.set(CSRF_HEADER, token);
@@ -79,7 +81,7 @@ export async function apiFetch<T>(path: string, { method = 'GET', body, signal }
     response = await fetch(path, {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
       credentials: 'same-origin',
       signal,
     });

@@ -1,5 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { formatNumber, toAsciiDigits } from './format';
+import { formatDate, formatNumber, localDigits, toAsciiDigits } from './format';
+
+describe('localDigits', () => {
+  it('shows a phone number in Bangla digits in Bangla only', () => {
+    expect(localDigits('01712-345678', 'bn')).toBe('০১৭১২-৩৪৫৬৭৮');
+    expect(localDigits('01712-345678', 'en')).toBe('01712-345678');
+  });
+});
+
+describe('formatDate', () => {
+  it('writes the date in the current language, and nothing for no date', () => {
+    expect(formatDate('2026-11-27T09:00:00Z', 'en')).toBe('27 Nov 2026');
+    expect(formatDate('2026-11-27T09:00:00Z', 'bn')).toContain('২০২৬');
+    expect(formatDate(null, 'en')).toBe('');
+    expect(formatDate('not a date', 'en')).toBe('');
+  });
+});
 
 describe('toAsciiDigits', () => {
   it('turns Bangla digits into ASCII digits and leaves the rest alone', () => {

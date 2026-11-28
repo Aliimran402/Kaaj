@@ -14,13 +14,14 @@ import { ApiError } from '../lib/api';
 
 // Shared building blocks in the Figma style: blue buttons, white rounded cards, light-blue banner.
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'md' | 'lg';
 
 const variantClass: Record<Variant, string> = {
   primary: 'bg-brand text-white hover:bg-brand-hover',
   secondary: 'border border-line-strong bg-white text-brand hover:bg-brand-soft',
   ghost: 'text-brand hover:bg-brand-soft',
+  danger: 'border border-danger/40 bg-white text-danger hover:bg-danger-soft',
 };
 
 const sizeClass: Record<Size, string> = {
@@ -118,12 +119,13 @@ export function PageBanner({
   );
 }
 
-type BadgeTone = 'brand' | 'success' | 'warning' | 'neutral';
+export type BadgeTone = 'brand' | 'success' | 'warning' | 'danger' | 'neutral';
 
 const badgeToneClass: Record<BadgeTone, string> = {
   brand: 'bg-brand-soft text-brand',
   success: 'bg-success-soft text-success',
   warning: 'bg-warning-soft text-warning',
+  danger: 'bg-danger-soft text-danger',
   neutral: 'bg-page text-muted',
 };
 
@@ -212,17 +214,17 @@ type TextFieldProps = Omit<ComponentProps<'input'>, 'id'> & {
   hint?: ReactNode;
   error?: string;
   inputClassName?: string;
+  /** The word shown after the label for a field that may stay empty, e.g. t('common.optional'). */
+  optional?: string;
 };
 
-export function TextField({ label, hint, error, className = '', inputClassName = '', ...input }: TextFieldProps) {
+export function TextField({ label, hint, error, optional, className = '', inputClassName = '', ...input }: TextFieldProps) {
   const id = useId();
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-ink">
-        {label}
-      </label>
+      <FieldLabel htmlFor={id} label={label} optional={optional} />
       <input
         id={id}
         aria-invalid={error ? true : undefined}
@@ -277,6 +279,80 @@ export function PasswordField({
           {visible ? <EyeOff aria-hidden className="size-5" /> : <Eye aria-hidden className="size-5" />}
         </button>
       </div>
+      {hint && (
+        <p id={hintId} className="mt-1.5 text-sm text-muted">
+          {hint}
+        </p>
+      )}
+      {error && <FieldMessage id={errorId}>{error}</FieldMessage>}
+    </div>
+  );
+}
+
+/** The label row: the label, and "(optional)" for fields that may stay empty. */
+function FieldLabel({ htmlFor, label, optional }: { htmlFor: string; label: string; optional?: string }) {
+  return (
+    <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-semibold text-ink">
+      {label}
+      {optional && <span className="ml-1.5 font-normal text-muted">({optional})</span>}
+    </label>
+  );
+}
+
+type SelectFieldProps = Omit<ComponentProps<'select'>, 'id'> & {
+  label: string;
+  hint?: ReactNode;
+  error?: string;
+  optional?: string;
+};
+
+export function SelectField({ label, hint, error, optional, className = '', children, ...select }: SelectFieldProps) {
+  const id = useId();
+  const hintId = hint ? `${id}-hint` : undefined;
+  const errorId = error ? `${id}-error` : undefined;
+  return (
+    <div className={className}>
+      <FieldLabel htmlFor={id} label={label} optional={optional} />
+      <select
+        id={id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(errorId, hintId)}
+        className={`${inputBase} pr-8 ${error ? 'border-danger' : 'border-field'}`}
+        {...select}
+      >
+        {children}
+      </select>
+      {hint && (
+        <p id={hintId} className="mt-1.5 text-sm text-muted">
+          {hint}
+        </p>
+      )}
+      {error && <FieldMessage id={errorId}>{error}</FieldMessage>}
+    </div>
+  );
+}
+
+type TextAreaFieldProps = Omit<ComponentProps<'textarea'>, 'id'> & {
+  label: string;
+  hint?: ReactNode;
+  error?: string;
+  optional?: string;
+};
+
+export function TextAreaField({ label, hint, error, optional, className = '', ...area }: TextAreaFieldProps) {
+  const id = useId();
+  const hintId = hint ? `${id}-hint` : undefined;
+  const errorId = error ? `${id}-error` : undefined;
+  return (
+    <div className={className}>
+      <FieldLabel htmlFor={id} label={label} optional={optional} />
+      <textarea
+        id={id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(errorId, hintId)}
+        className={`${inputBase} min-h-24 py-2.5 ${error ? 'border-danger' : 'border-field'}`}
+        {...area}
+      />
       {hint && (
         <p id={hintId} className="mt-1.5 text-sm text-muted">
           {hint}
